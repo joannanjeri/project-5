@@ -16,16 +16,26 @@ import com.google.mlkit.common.model.DownloadConditions
 import com.google.mlkit.nl.translate.TranslateLanguage
 import com.google.mlkit.nl.translate.Translation
 import com.google.mlkit.nl.translate.Translator
-import kotlinx.coroutines.Dispatchers
-import java.lang.Exception
+import com.google.mlkit.nl.translate.TranslatorOptions
 
+class MainActivity : AppCompatActivity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragmentCont, TranslationFragment())
+            .commit()
+    }
+}
 class TranslationViewModel : ViewModel() {
     private val translator: Translator
 
     init {
-        val options = TranslateOptions.Builder()
+        val options = TranslatorOptions.Builder()
             .setSourceLanguage(TranslateLanguage.ENGLISH)
-            .setSourceLanguage(TranslateLanguage.SPANISH)
+            .setTargetLanguage(TranslateLanguage.SPANISH)
             .build()
         translator = Translation.getClient(options)
 
@@ -35,11 +45,20 @@ class TranslationViewModel : ViewModel() {
 
         translator.downloadModelIfNeeded(conditions)
             .addOnSuccessListener { }
-            .addOnFailureListener { e -> }
+            .addOnFailureListener { e ->
+                throw e
+            }
     }
 
-    fun translateText(inputText: String, targetLanguage: String): Task<String> {
-        return translator.translate(inputText)
+    fun translateText(inputText: String): Task<String> {
+        return translator
+            .translate(inputText)
+            .addOnSuccessListener { translatedText ->
+                translatedText
+            }
+            .addOnFailureListener{ e ->
+                throw e
+            }
     }
 }
 
@@ -55,45 +74,33 @@ class TranslationViewModel : ViewModel() {
             container: ViewGroup?,
             savedInstanceState: Bundle?
         ): View? {
-            val view = inflater.inflate(R.layout.activity_main, container, false)
-            editText = view.findViewById(R.id.editText)
+            val view = inflater.inflate(R.layout.fragment_translation, container, false)
+            editText = view.findViewById(R.id.editedText)
             translateButton = view.findViewById(R.id.translation)
             translationView = view.findViewById(R.id.translationView)
             return view
-//            return inflater.inflate(R.layout.fragment_translation, container, false)
         }
 
         override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
             super.onViewCreated(view, savedInstanceState)
 
             viewModel = ViewModelProvider(this).get(TranslationViewModel::class.java)
-//            editText.hint = "Write something..."
             translateButton.setOnClickListener {
                 val inputText = editText.text.toString()
 
-                viewModel.viewModelScope.launch(Dispatchers.IO) {
-                    try {
-                        val translatedText = viewModel.translateText(inputText)
+                viewModel.translateText(inputText)
+                    .addOnSuccessListener { translatedText ->
                         translationView.text = "Translation: $translatedText"
-                    } catch (e: Exception) {
-
                     }
-                }
+                    .addOnFailureListener { e ->
+                        e.printStackTrace()
+                    }
             }
         }
+
+
     }
 
-    class MainActivity : AppCompatActivity() {
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            setContentView(R.layout.activity_main)
-
-            supportFragmentManager.beginTransaction()
-                .replace(R.id.fragmentCont, TranslationFragment())
-                .commit()
-        }
-    }
 
 
 
