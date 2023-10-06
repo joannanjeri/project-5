@@ -8,11 +8,13 @@
     android:layout_margin="10dp"
     tools:context=".MainActivity">
 
+    <!-- header for source language and translation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
+        <!-- label for source language -->
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -21,6 +23,7 @@
             android:text="Source Language"
             android:textSize="15sp" />
 
+        <!-- label for translation -->
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -31,13 +34,14 @@
 
     </LinearLayout>
 
-
+    <!-- radio buttons for choosing source language and translation language -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="horizontal">
 
+        <!-- radio buttons for selecting source language -->
         <RadioGroup
             android:id="@+id/sourceLang"
             android:layout_width="0dp"
@@ -68,6 +72,7 @@
 
         </RadioGroup>
 
+        <!-- radio buttons for selecting the target language -->
         <RadioGroup
             android:id="@+id/translation"
             android:layout_width="0dp"
@@ -101,6 +106,7 @@
 
     </LinearLayout>
 
+    <!-- TextView to display translated text -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -109,17 +115,13 @@
         android:text="Translation:"
         android:textSize="15sp" />
 
+    <!-- FrameLayout to load fragments -->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="2"
         android:id="@+id/fragmentCont" />
 
-<!--    <EditText-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:id="@+id/editText"-->
-<!--        android:hint="Write something..." />-->
 
 </LinearLayout>
 
